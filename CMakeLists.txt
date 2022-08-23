@@ -7,7 +7,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/workspace)
 
 # 如果要支持python则设置python路径
-set(HAS_PYTHON ON)
+set(HAS_PYTHON OFF)
 set(PythonRoot "/datav/software/anaconda3")
 set(PythonName "python3.9")
 
@@ -15,11 +15,11 @@ set(PythonName "python3.9")
 #set(CUDA_GEN_CODE "-gencode=arch=compute_75,code=sm_75")
 
 # 如果你的opencv找不到，可以自己指定目录
-set(OpenCV_DIR   "/datav/lean/opencv-4.2.0/lib/cmake/opencv4/")
+# set(OpenCV_DIR   "/usr/local/include/opencv4/")
 
-set(CUDA_TOOLKIT_ROOT_DIR     "/datav/lean/cuda-11.2")
-set(CUDNN_DIR    "/datav/lean/cudnn8.2.4.15-cuda11.4")
-set(TENSORRT_DIR "/datav/lean/TensorRT-8.2.3.0-cuda11.4-cudnn8.2")
+set(CUDA_TOOLKIT_ROOT_DIR     "/usr/local/cuda")
+# set(CUDNN_DIR    "/datav/lean/cudnn8.2.4.15-cuda11.4")
+set(TENSORRT_DIR "/home/yao/TensorRT-7.2.3.4")
 
 # set(CUDA_TOOLKIT_ROOT_DIR     "/data/sxai/lean/cuda-10.2")
 # set(CUDNN_DIR    "/data/sxai/lean/cudnn7.6.5.32-cuda10.2")
@@ -45,7 +45,7 @@ include_directories(
     ${CUDA_TOOLKIT_ROOT_DIR}/include
     ${PROTOBUF_DIR}/include
     ${TENSORRT_DIR}/include
-    ${CUDNN_DIR}/include
+    # ${CUDNN_DIR}/include
 )
 
 # 切记，protobuf的lib目录一定要比tensorRT目录前面，因为tensorRTlib下带有protobuf的so文件
@@ -54,7 +54,7 @@ link_directories(
     ${PROTOBUF_DIR}/lib
     ${TENSORRT_DIR}/lib
     ${CUDA_TOOLKIT_ROOT_DIR}/lib64
-    ${CUDNN_DIR}/lib
+    # ${CUDNN_DIR}/lib
 )
 
 if("${HAS_PYTHON}" STREQUAL "ON")
@@ -93,68 +93,68 @@ if("${HAS_PYTHON}" STREQUAL "ON")
     target_link_libraries(pro "${PythonName}")
 endif()
 
-add_custom_target(
-    yolo
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro yolo
-)
+# add_custom_target(
+#     yolo
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro yolo
+# )
 
-add_custom_target(
-    yolo_gpuptr
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro yolo_gpuptr
-)
+# add_custom_target(
+#     yolo_gpuptr
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro yolo_gpuptr
+# )
 
-add_custom_target(
-    yolo_fast
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro yolo_fast
-)
+# add_custom_target(
+#     yolo_fast
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro yolo_fast
+# )
 
-add_custom_target(
-    centernet
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro centernet
-)
+# add_custom_target(
+#     centernet
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro centernet
+# )
 
-add_custom_target(
-    alphapose 
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro alphapose
-)
+# add_custom_target(
+#     alphapose 
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro alphapose
+# )
 
-add_custom_target(
-    retinaface
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro retinaface
-)
+# add_custom_target(
+#     retinaface
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro retinaface
+# )
 
-add_custom_target(
-    dbface
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro dbface
-)
+# add_custom_target(
+#     dbface
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro dbface
+# )
 
-add_custom_target(
-    arcface 
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro arcface
-)
+# add_custom_target(
+#     arcface 
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro arcface
+# )
 
-add_custom_target(
-    bert 
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro bert
-)
+# add_custom_target(
+#     bert 
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro bert
+# )
 
 add_custom_target(
     fall
@@ -163,51 +163,51 @@ add_custom_target(
     COMMAND ./pro fall_recognize
 )
 
-add_custom_target(
-    scrfd
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro scrfd
-)
+# add_custom_target(
+#     scrfd
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro scrfd
+# )
 
-add_custom_target(
-    lesson
-    DEPENDS pro
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
-    COMMAND ./pro lesson
-)
+# add_custom_target(
+#     lesson
+#     DEPENDS pro
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/workspace
+#     COMMAND ./pro lesson
+# )
 
-add_custom_target(
-    pyscrfd
-    DEPENDS pytrtc
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
-    COMMAND python test_scrfd.py
-)
+# add_custom_target(
+#     pyscrfd
+#     DEPENDS pytrtc
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
+#     COMMAND python test_scrfd.py
+# )
 
-add_custom_target(
-    pyinstall
-    DEPENDS pytrtc
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
-    COMMAND python setup.py install
-)
+# add_custom_target(
+#     pyinstall
+#     DEPENDS pytrtc
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
+#     COMMAND python setup.py install
+# )
 
-add_custom_target(
-    pytorch
-    DEPENDS pytrtc
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
-    COMMAND python test_torch.py
-)
+# add_custom_target(
+#     pytorch
+#     DEPENDS pytrtc
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
+#     COMMAND python test_torch.py
+# )
 
-add_custom_target(
-    pyyolov5
-    DEPENDS pytrtc
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
-    COMMAND python test_yolov5.py
-)
+# add_custom_target(
+#     pyyolov5
+#     DEPENDS pytrtc
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
+#     COMMAND python test_yolov5.py
+# )
 
-add_custom_target(
-    pycenternet
-    DEPENDS pytrtc
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
-    COMMAND python test_centernet.py
-)
+# add_custom_target(
+#     pycenternet
+#     DEPENDS pytrtc
+#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/example-python
+#     COMMAND python test_centernet.py
+# )

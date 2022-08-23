@@ -1,5 +1,5 @@
 
-#include <builder/trt_builder.hpp>
+// #include <builder/trt_builder.hpp>
 #include <infer/trt_infer.hpp>
 #include <common/ilogger.hpp>
 #include "app_yolo_fast/yolo_fast.hpp"
@@ -137,17 +137,17 @@ static void test(YoloFast::Type type, TRT::Mode mode, const string& model){
     string model_file = iLogger::format("%s.%s.trtmodel", name, mode_name);
     int test_batch_size = 16;
     
-    if(not iLogger::exists(model_file)){
-        TRT::compile(
-            mode,                       // FP32、FP16、INT8
-            test_batch_size,            // max batch size
-            onnx_file,                  // source 
-            model_file,                 // save to
-            {},
-            int8process,
-            "inference"
-        );
-    }
+    // if(not iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         mode,                       // FP32、FP16、INT8
+    //         test_batch_size,            // max batch size
+    //         onnx_file,                  // source 
+    //         model_file,                 // save to
+    //         {},
+    //         int8process,
+    //         "inference"
+    //     );
+    // }
 
     inference_and_performance(deviceid, model_file, mode, type, name);
 }

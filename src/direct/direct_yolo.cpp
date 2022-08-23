@@ -1,5 +1,5 @@
 
-#include <builder/trt_builder.hpp>
+// #include <builder/trt_builder.hpp>
 #include <infer/trt_infer.hpp>
 #include <common/preprocess_kernel.cuh>
 #include <common/ilogger.hpp>
@@ -235,17 +235,17 @@ static void test(Type type, TRT::Mode mode, const string& model, int deviceid = 
     string model_file = iLogger::format("%s.%s.trtmodel", name, mode_name);
     int test_batch_size = 16;
     
-    if(!iLogger::exists(model_file)){
-        TRT::compile(
-            mode,                       // FP32、FP16、INT8
-            test_batch_size,            // max batch size
-            onnx_file,                  // source 
-            model_file,                 // save to
-            {},
-            int8process,
-            "inference"
-        );
-    }
+    // if(!iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         mode,                       // FP32、FP16、INT8
+    //         test_batch_size,            // max batch size
+    //         onnx_file,                  // source 
+    //         model_file,                 // save to
+    //         {},
+    //         int8process,
+    //         "inference"
+    //     );
+    // }
     inference(type, mode, model_file);
 }
 

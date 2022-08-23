@@ -10,7 +10,13 @@
 #include <common/trt_tensor.hpp>
 
 namespace TRT {
+	enum class Mode : int {
+		FP32,
+		FP16,
+		INT8
+	};
 
+	const char* mode_string(Mode type);
 	class Infer {
 	public:
 		virtual void     forward(bool sync = true) = 0;

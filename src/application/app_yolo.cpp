@@ -1,5 +1,4 @@
-
-#include <builder/trt_builder.hpp>
+#include <common/trt_tensor.hpp>
 #include <infer/trt_infer.hpp>
 #include <common/ilogger.hpp>
 #include "app_yolo/yolo.hpp"
@@ -138,17 +137,17 @@ static void test(Yolo::Type type, TRT::Mode mode, const string& model){
     string model_file = iLogger::format("%s.%s.trtmodel", name, mode_name);
     int test_batch_size = 16;
     
-    if(not iLogger::exists(model_file)){
-        TRT::compile(
-            mode,                       // FP32、FP16、INT8
-            test_batch_size,            // max batch size
-            onnx_file,                  // source 
-            model_file,                 // save to
-            {},
-            int8process,
-            "inference"
-        );
-    }
+    // if(not iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         mode,                       // FP32、FP16、INT8
+    //         test_batch_size,            // max batch size
+    //         onnx_file,                  // source 
+    //         model_file,                 // save to
+    //         {},
+    //         int8process,
+    //         "inference"
+    //     );
+    // }
 
     inference_and_performance(deviceid, model_file, mode, type, name);
 }
@@ -174,8 +173,8 @@ void multi_gpu_test(){
 
 int app_yolo(){
  
-    test(Yolo::Type::V7, TRT::Mode::FP32, "yolov7");
-    //test(Yolo::Type::V5, TRT::Mode::FP32, "yolov5s");
+    // test(Yolo::Type::V7, TRT::Mode::FP32, "yolov7");
+    test(Yolo::Type::V5, TRT::Mode::FP32, "yolov5s");
     //test(Yolo::Type::V3, TRT::Mode::FP32, "yolov3");
 
     // multi_gpu_test();

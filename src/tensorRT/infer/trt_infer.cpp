@@ -100,6 +100,18 @@ namespace TRT {
 		shared_ptr<IRuntime> runtime_ = nullptr;
 	};
 
+	const char* mode_string(Mode type) {
+		switch (type) {
+		case Mode::FP32:
+			return "FP32";
+		case Mode::FP16:
+			return "FP16";
+		case Mode::INT8:
+			return "INT8";
+		default:
+			return "UnknowTRTMode";
+		}
+	}
 	class InferImpl : public Infer {
 
 	public:

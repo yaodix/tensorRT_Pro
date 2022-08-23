@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <opencv2/opencv.hpp>
-#include <builder/trt_builder.hpp>
 #include <infer/trt_infer.hpp>
 #include <common/ilogger.hpp>
 
@@ -29,16 +28,16 @@ static bool compile_models(){
         string model_file = iLogger::format("%s.FP32.trtmodel", name);
         int test_batch_size = 1; 
         
-        if(not iLogger::exists(model_file)){
-            bool ok = TRT::compile(
-                TRT::Mode::FP32,            // FP32、FP16、INT8
-                test_batch_size,            // max batch size
-                onnx_file,                  // source 
-                model_file                  // save to
-            );
+        // if(not iLogger::exists(model_file)){
+        //     bool ok = TRT::compile(
+        //         TRT::Mode::FP32,            // FP32、FP16、INT8
+        //         test_batch_size,            // max batch size
+        //         onnx_file,                  // source 
+        //         model_file                  // save to
+        //     );
 
-            if(!ok) return false;
-        }
+        //     if(!ok) return false;
+        // }
     }
     return true;
 }

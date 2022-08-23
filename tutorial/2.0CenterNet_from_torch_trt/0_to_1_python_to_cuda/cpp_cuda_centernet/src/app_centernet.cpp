@@ -251,14 +251,14 @@ static void test(Centernet::Type type, TRT::Mode mode, const string& model){
     string model_file = iLogger::format("%s.%s.trtmodel", name, mode_name);
     int test_batch_size = 16;
 
-    if(not iLogger::exists(model_file)){
-        TRT::compile(
-            mode,                       // FP32、FP16、INT8
-            test_batch_size,            // max batch size
-            onnx_file,                  // source 
-            model_file                  // save to
-        );
-    }
+    // if(not iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         mode,                       // FP32、FP16、INT8
+    //         test_batch_size,            // max batch size
+    //         onnx_file,                  // source 
+    //         model_file                  // save to
+    //     );
+    // }
 
     forward_engine(model_file, type);
 }

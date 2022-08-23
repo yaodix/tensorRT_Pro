@@ -214,17 +214,17 @@ static void test_int8(Yolo::Type type, const string& model){
     string model_file = iLogger::format("%s.int8.trtmodel", name);
     int test_batch_size = 16; 
 
-    if(not iLogger::exists(model_file)){
-        TRT::compile(
-            TRT::Mode::INT8,            // FP32、FP16、INT8
-            test_batch_size,            // max batch size
-            onnx_file,                  // source
-            model_file,                 // save to
-            {},                         // reset input dims
-            int8process,                // int8 function
-            "inference"                 // int8 image directory
-        );
-    }
+    // if(not iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         TRT::Mode::INT8,            // FP32、FP16、INT8
+    //         test_batch_size,            // max batch size
+    //         onnx_file,                  // source
+    //         model_file,                 // save to
+    //         {},                         // reset input dims
+    //         int8process,                // int8 function
+    //         "inference"                 // int8 image directory
+    //     );
+    // }
 
     forward_engine(model_file, type);
 }
@@ -244,14 +244,14 @@ static void test(Yolo::Type type, TRT::Mode mode, const string& model){
     string model_file = iLogger::format("%s.%s.trtmodel", name, mode_name);
     int test_batch_size = 16;
     
-    if(not iLogger::exists(model_file)){
-        TRT::compile(
-            mode,                       // FP32、FP16、INT8
-            test_batch_size,            // max batch size
-            onnx_file,                  // source 
-            model_file                  // save to
-        );
-    }
+    // if(not iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         mode,                       // FP32、FP16、INT8
+    //         test_batch_size,            // max batch size
+    //         onnx_file,                  // source 
+    //         model_file                  // save to
+    //     );
+    // }
 
     forward_engine(model_file, type);
 }

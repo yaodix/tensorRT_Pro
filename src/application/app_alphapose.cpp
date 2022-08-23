@@ -20,7 +20,6 @@
  *   请关注B站，我们根据情况发布相关教程视频（免费）
  */
 
-#include <builder/trt_builder.hpp>
 #include <infer/trt_infer.hpp>
 #include <common/ilogger.hpp>
 #include "app_alphapose/alpha_pose.hpp"
@@ -43,14 +42,14 @@ int app_alphapose(){
     string model_file = iLogger::format("%s.FP32.trtmodel", name);
     int test_batch_size = 16;  
     
-    if(!iLogger::exists(model_file)){
-        TRT::compile(
-            TRT::Mode::FP32,            // FP32、FP16、INT8
-            test_batch_size,            // max_batch_size
-            onnx_file,                  // source
-            model_file                  // save to
-        );
-    }
+    // if(!iLogger::exists(model_file)){
+    //     TRT::compile(
+    //         TRT::Mode::FP32,            // FP32、FP16、INT8
+    //         test_batch_size,            // max_batch_size
+    //         onnx_file,                  // source
+    //         model_file                  // save to
+    //     );
+    // }
    
     Mat image = imread("inference/gril.jpg");
     auto engine = AlphaPose::create_infer(model_file, 0);
