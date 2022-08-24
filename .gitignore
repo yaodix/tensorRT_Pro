@@ -94,3 +94,5 @@ __pycache__
 /restful_server/objs
 /restful_server/workspace/*.trtmodel
 /restful_server/workspace/*.onnx
+
+weights/*

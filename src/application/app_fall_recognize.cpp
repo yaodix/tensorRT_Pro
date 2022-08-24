@@ -16,49 +16,22 @@ using namespace std;
 
 bool requires(const char* name);
 
-static bool compile_models(){
-
-    TRT::set_device(0);
-    const char* onnx_files[]{"yolox_m", "sppe", "fall_bp"};
-    for(auto& name : onnx_files){
-        if(not requires(name))
-            return false;
-
-        string onnx_file = iLogger::format("%s.onnx", name);
-        string model_file = iLogger::format("%s.FP32.trtmodel", name);
-        int test_batch_size = 1; 
-        
-        // if(not iLogger::exists(model_file)){
-        //     bool ok = TRT::compile(
-        //         TRT::Mode::FP32,            // FP32、FP16、INT8
-        //         test_batch_size,            // max batch size
-        //         onnx_file,                  // source 
-        //         model_file                  // save to
-        //     );
-
-        //     if(!ok) return false;
-        // }
-    }
-    return true;
-}
 
 int app_fall_recognize(){
     cv::setNumThreads(0);
 
     INFO("===================== test alphapose FP32 ==================================");
-    if(!compile_models())
-        return 0;
     
-    auto pose_model_file     = "sppe.FP32.trtmodel";
-    auto detector_model_file = "yolox_m.FP32.trtmodel";
-    auto gcn_model_file      = "fall_bp.FP32.trtmodel";
+    auto pose_model_file     = "weights/sppe.trt";
+    auto detector_model_file = "weights/yolov5s.trt";
+    auto gcn_model_file      = "weights/fall_bp.trt";
     
     auto pose_model     = AlphaPoseOld::create_infer(pose_model_file, 0);
-    auto detector_model = Yolo::create_infer(detector_model_file, Yolo::Type::X, 0, 0.4f);
+    auto detector_model = Yolo::create_infer(detector_model_file, Yolo::Type::V5, 0, 0.4f);
     auto gcn_model      = FallGCN::create_infer(gcn_model_file, 0);
 
     Mat image;
-    VideoCapture cap("exp/fall_video.mp4");
+    VideoCapture cap("workspace/exp/fall_old_man.mp4");
     INFO("Video fps=%d, Width=%d, Height=%d", 
         (int)cap.get(cv::CAP_PROP_FPS), 
         (int)cap.get(cv::CAP_PROP_FRAME_WIDTH), 
@@ -126,6 +99,8 @@ int app_fall_recognize(){
         }
         //remote_show->post(image);
         //writer.write(image);
+        cv::imshow("hello", image);
+        cv::waitKey(2);
     }
     INFO("Done");
     return 0;
