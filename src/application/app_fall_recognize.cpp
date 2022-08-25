@@ -24,14 +24,14 @@ int app_fall_recognize(){
     
     auto pose_model_file     = "weights/sppe.trt";
     auto detector_model_file = "weights/yolov5s.trt";
-    auto gcn_model_file      = "weights/fall_bp.trt";
+    auto gcn_model_file      = "weights/fall_bp.trt";  // 跌倒，图神经网络分类模型
     
     auto pose_model     = AlphaPoseOld::create_infer(pose_model_file, 0);
     auto detector_model = Yolo::create_infer(detector_model_file, Yolo::Type::V5, 0, 0.4f);
     auto gcn_model      = FallGCN::create_infer(gcn_model_file, 0);
 
     Mat image;
-    VideoCapture cap("workspace/exp/fall_old_man.mp4");
+    VideoCapture cap("workspace/exp/fall_2_women.mp4");
     INFO("Video fps=%d, Width=%d, Height=%d", 
         (int)cap.get(cv::CAP_PROP_FPS), 
         (int)cap.get(cv::CAP_PROP_FRAME_WIDTH), 

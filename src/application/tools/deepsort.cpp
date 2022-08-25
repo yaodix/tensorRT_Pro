@@ -972,9 +972,7 @@ namespace DeepSORT {
             return nullptr;
         }
 
-        std::shared_ptr<TrackerImpl> tracker_ptr(new TrackerImpl(
-            config
-        ));
+        std::shared_ptr<TrackerImpl> tracker_ptr(new TrackerImpl(config));
         return tracker_ptr;
     }
 };

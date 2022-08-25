@@ -37,15 +37,15 @@ enum class State : int{
 
 struct TrackerConfig{
 
-    int max_age  = 150;
-    int nhit     = 3;
+    int max_age  = 150;  // 在侦测状态设置成Deleted前，最大的连续miss数
+    int nhit     = 3;  // 确认轨迹前的连续检测次数。如果前n_init帧内发生未命中，则将轨迹状态设置为Deleted ?
     float distance_threshold = 100;
     int nbuckets = 0;
     bool has_feature = false;
 
     // kalman
     // /** 初始状态 **/
-    float initiate_state[8];
+    float initiate_state[8];  // 初始状态分布的平均向量?
 
     // /** 每一侦的运动量协方差，下一侦 = 当前帧 + 运动量 **/
     float per_frame_motion[8];
