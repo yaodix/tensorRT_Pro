@@ -146,13 +146,11 @@ namespace Yolo{
         return output;
     }
 
-    using ControllerImpl = InferController
-    <
-        Mat,                    // input
-        BoxArray,               // output
-        tuple<string, int>,     // start param
-        AffineMatrix            // additional
-    >;
+    using ControllerImpl = InferController<Mat,                    // input
+                                           BoxArray,               // output
+                                           tuple<string, int>,     // start param
+                                           AffineMatrix            // additional
+                                        >;
     class InferImpl : public Infer, public ControllerImpl{
     public:
 

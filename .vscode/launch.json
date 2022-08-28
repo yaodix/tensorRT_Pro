@@ -8,10 +8,10 @@
             "name": "(gdb) 启动",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/workspace/pro",
-            "args": ["yolo"],
+            "program": "${workspaceFolder}/pro",
+            "args": ["fall_recognize"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/workspace",
+            "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -22,7 +22,8 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build"
+            // "preLaunchTask": "build"
+            "miDebuggerPath": "/usr/bin/gdb"   // 调试器路径， linux
         }
     ]
 }

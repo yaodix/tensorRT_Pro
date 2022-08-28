@@ -22,16 +22,17 @@ int app_fall_recognize(){
 
     INFO("===================== test alphapose FP32 ==================================");
     
-    auto pose_model_file     = "weights/sppe.trt";
-    auto detector_model_file = "weights/yolov5s.trt";
-    auto gcn_model_file      = "weights/fall_bp.trt";  // 跌倒，图神经网络分类模型
+    auto pose_model_file     = "/home/yao/workspace/tensorRT_Pro/weights/sppe.trt";  // singal person pose estimation
+    auto detector_model_file = "/home/yao/workspace/tensorRT_Pro/weights/yolov5m.trt";
+    auto gcn_model_file      = "/home/yao/workspace/tensorRT_Pro/weights/fall_bp.trt";  // 跌倒，图神经网络分类模型
     
     auto pose_model     = AlphaPoseOld::create_infer(pose_model_file, 0);
-    auto detector_model = Yolo::create_infer(detector_model_file, Yolo::Type::V5, 0, 0.4f);
+    auto detector_model = Yolo::create_infer(detector_model_file, Yolo::Type::V5, 0, 0.4f, 0.4f);
     auto gcn_model      = FallGCN::create_infer(gcn_model_file, 0);
 
     Mat image;
-    VideoCapture cap("workspace/exp/fall_2_women.mp4");
+    Mat det_image;
+    VideoCapture cap("/home/yao/workspace/tensorRT_Pro/workspace/exp/basketball.mp4");
     INFO("Video fps=%d, Width=%d, Height=%d", 
         (int)cap.get(cv::CAP_PROP_FPS), 
         (int)cap.get(cv::CAP_PROP_FRAME_WIDTH), 
@@ -61,13 +62,20 @@ int app_fall_recognize(){
     //     INFOE("Writer failed.");
     //     return 0;
     // }
+    int frame_id = 0;
     while(cap.read(image)){
+        std::cout << "frame " << frame_id++ << std::endl;
+        det_image = image.clone();
         auto objects = detector_model->commit(image).get();
 
         vector<DeepSORT::Box> boxes;
         for(int i = 0; i < objects.size(); ++i){
             auto& obj = objects[i];
             if(obj.class_label != 0) continue;
+
+            rectangle(det_image, DeepSORT::convert_box_to_rect(obj), Scalar(0, 255, 0), 2);  // 检测框输出
+            imwrite("det.jpg", det_image);
+
             boxes.emplace_back(std::move(DeepSORT::convert_to_box(obj)));
         }
         tracker->update(boxes);
@@ -93,14 +101,16 @@ int app_fall_recognize(){
                     cv::line(image, p, np, Scalar(255, 128, 60), 2, 16);
                 }
 
-                putText(image, iLogger::format("%d. [%s] %.2f %%", person->id(), label_name, confidence * 100), box.tl(), 0, 1, Scalar(0, 255, 0), 2, 16);
+                // putText(image, iLogger::format("%d. [%s] %.2f %%", person->id(), label_name, confidence * 100), box.tl(), 0, 1, Scalar(0, 255, 0), 2, 16);
+                putText(image, iLogger::format("%d", person->id()), box.tl(), 0, 1, Scalar(0, 255, 0), 2, 16);
                 //INFO("Predict is [%s], %.2f %%", label_name, confidence * 100);
            }
         }
         //remote_show->post(image);
         //writer.write(image);
+        // cv::imwrite("image_debug.jpg", image);
         cv::imshow("hello", image);
-        cv::waitKey(2);
+        cv::waitKey(5);
     }
     INFO("Done");
     return 0;

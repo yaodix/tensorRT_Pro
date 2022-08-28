@@ -96,3 +96,6 @@ __pycache__
 /restful_server/workspace/*.onnx
 
 weights/*
+
+pro
+src/application/image_debug.jpg

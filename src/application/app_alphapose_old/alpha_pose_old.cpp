@@ -48,13 +48,11 @@ namespace AlphaPoseOld{
         return make_tuple(newx, newy);
     }
 
-    using ControllerImpl = InferController
-    <
-        Input,                     // input
-        vector<Point3f>,           // output
-        tuple<string, int>,        // start param
-        AffineMatrix               // additional
-    >;
+    using ControllerImpl = InferController< Input,                     // input
+                                            vector<Point3f>,           // output
+                                            tuple<string, int>,        // start param
+                                            AffineMatrix               // additional
+                                        >;
     class InferImpl : public Infer, public ControllerImpl{
     public:
         /** 要求在InferImpl里面执行stop，而不是在基类执行stop **/

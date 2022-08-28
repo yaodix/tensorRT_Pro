@@ -32,12 +32,10 @@ namespace FallGCN{
             p[i] /= total;
     }
 
-    using ControllerImpl = InferController
-    <
-        Input,                     // input
-        tuple<FallState, float>,   // output
-        tuple<string, int>         // start param
-    >;
+    using ControllerImpl = InferController<Input,                     // input
+                                           tuple<FallState, float>,   // output
+                                           tuple<string, int>         // start param
+                                        >;
     class InferImpl : public Infer, public ControllerImpl{
     public:
         /** 要求在InferImpl里面执行stop，而不是在基类执行stop **/

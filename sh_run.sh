@@ -1,1 +1,1 @@
-./workspace/pro fall_recognize
+./pro fall_recognize

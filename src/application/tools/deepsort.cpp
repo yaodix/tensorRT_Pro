@@ -29,7 +29,7 @@ namespace DeepSORT {
         3.8415f,
         5.9915f,
         7.8147f,
-        9.4877f,
+        9.4877f,  // 逆χ2分布计算得来的95%置信区间, 四维测量空间，相应的Mahalanobis阈值为t(1) = 9.4877
         11.070f,
         12.592f,
         14.067f,
@@ -415,8 +415,7 @@ namespace DeepSORT {
     };
 
 
-    TrackerConfig::TrackerConfig(){
-        
+    TrackerConfig::TrackerConfig() {        
         float std_weight_position_ = 1 / 20.f;
         float std_weight_velocity_ = 1 / 160.f;
         float initiate_state[] = {
@@ -481,7 +480,7 @@ namespace DeepSORT {
     public:
         KalmanFilter(const TrackerConfig& config):config_(config) {
             /* 匀速直线运动 */
-            motion_mat_ = Eigen::Matrix<float, 8, 8>::Identity(8, 8);
+            motion_mat_ = Eigen::Matrix<float, 8, 8>::Identity(8, 8);  // 矩阵A, x(k) = A*x(k-1)
             for (int i = 0; i < 4; ++i) {
                 motion_mat_(i, 4 + i) = 1;
             }
@@ -507,15 +506,19 @@ namespace DeepSORT {
                         config_.noise[2],
                         config_.noise[3] * mean(3, 0);
             std_vel = std_vel.array().pow(2).matrix();
+            // 初始化噪声矩阵R
             Eigen::Matrix<float, 4, 4> innovation_cov(std_vel.asDiagonal());
 
-            mean_ret = update_mat_ * mean;
+            // 将均值向量映射到检测空间，即Hx'
+            mean_ret = update_mat_ * mean; 
+            // 将协方差矩阵映射到检测空间，即HP'H^T
             covariance_ret = update_mat_ * covariance * update_mat_.transpose() + innovation_cov;
         }
 
         /**
-         * @brief 马氏距离计算
-         * 
+         * @brief 马氏距离计算,描述运动关联程度
+         * 相机存在运动时会使得马氏距离的关联方法失效，造成ID switch的现象
+         * 距离度量对短期的预测和匹配效果很好，但对于长时间的遮挡的情况，使用外观特征的度量比较有效
          * @param mean 
          * @param covariance 
          * @param boxah 
@@ -577,9 +580,10 @@ namespace DeepSORT {
                             config_.per_frame_motion[6],
                             config_.per_frame_motion[7] * mean(3, 0);
             std_pos_vel = std_pos_vel.array().pow(2).matrix();
-            Eigen::Matrix<float, 8, 8> motion_cov(std_pos_vel.asDiagonal());
+            Eigen::Matrix<float, 8, 8> motion_cov(std_pos_vel.asDiagonal());  // 初始化噪声矩阵Q
 
-            mean = motion_mat_ * mean;
+            mean = motion_mat_ * mean;   // 卡尔曼公式1, x' = Fx
+            // 卡尔曼公式2， P' = FPF(T) + Q
             covariance = motion_mat_ * covariance * motion_mat_.transpose() + motion_cov;
         }
 
@@ -596,7 +600,7 @@ namespace DeepSORT {
 
             Eigen::Matrix<float, 4, 1> measure;
             measure << boxah.center_x, boxah.center_y, boxah.aspect_ratio, boxah.height;
-            auto innovation = measure - mean_ret;
+            auto innovation = measure - mean_ret;  //  z - Hx'
             
             mean = mean + kalman_gain * innovation;
             covariance = covariance - kalman_gain * update_mat_ * covariance;
@@ -605,7 +609,7 @@ namespace DeepSORT {
         void initiate(const BBoxXYAH &boxah, Eigen::Matrix<float, 8, 1> &mean, 
                     Eigen::Matrix<float, 8, 8> &covariance) {
             mean << boxah.center_x, boxah.center_y, boxah.aspect_ratio,
-                boxah.height, 0.0f, 0.0f, 0.0f, 0.0f;
+                boxah.height, 0.0f, 0.0f, 0.0f, 0.0f;  // 速度均初始化为0
 
             /** 初始状态 **/
             Eigen::Matrix<float, 8, 1> std_val;
@@ -618,7 +622,7 @@ namespace DeepSORT {
             //            10.0f * std_weight_velocity_ * boxah.height,
             //            1e-5,
             //            10.0f * std_weight_velocity_ * boxah.height;
-            std_val << config_.initiate_state[0] * boxah.height,
+            std_val << config_.initiate_state[0] * boxah.height,  // std_val为什么这样算?
                        config_.initiate_state[1] * boxah.height,
                        config_.initiate_state[2],
                        config_.initiate_state[3] * boxah.height,
@@ -626,15 +630,18 @@ namespace DeepSORT {
                        config_.initiate_state[5] * boxah.height,
                        config_.initiate_state[6],
                        config_.initiate_state[7] * boxah.height;
+
+            std::cout << "std_val " << std_val <<std::endl;
             covariance = Eigen::Matrix<float, 8, 8>(std_val.array().pow(2).matrix().asDiagonal());
+            std::cout << "covariance " << covariance <<std::endl;
         }
 
     private:
         //float std_weight_position_{1.0f / 20};
         //float std_weight_velocity_{1.0f / 160};
 
-        Eigen::Matrix<float, 8, 8> motion_mat_;
-        Eigen::Matrix<float, 4, 8> update_mat_;
+        Eigen::Matrix<float, 8, 8> motion_mat_;  // A
+        Eigen::Matrix<float, 4, 8> update_mat_;  // H
         TrackerConfig config_;
     };
 
@@ -651,7 +658,7 @@ namespace DeepSORT {
             covariance_    = covariance;
             mean_          = mean;
             id_            = id_next;
-            state_         = State::Tentative;
+            state_         = State::Tentative;  // 创建初，状态均为tentative
             trace_.emplace_back(box);
 
             if(has_feature_)
@@ -698,8 +705,8 @@ namespace DeepSORT {
         void predict(KalmanFilter &km_filter) {
             km_filter.predict(mean_, covariance_);
 
-            ++ age_;
-            ++ time_since_update_;
+            ++ age_;                // 该track自出现以来的总帧数加1
+            ++ time_since_update_;  // 该track自最近一次更新(update)以来的总帧数加1
         }
 
         void mark_missed() {
@@ -708,8 +715,7 @@ namespace DeepSORT {
             }
         }
 
-        void update(KalmanFilter &km_filter, const Box &box) {
-            
+        void update(KalmanFilter &km_filter, const Box &box) {            
             if(has_feature_ && box.feature.empty()){
                 fprintf(stderr, "Feature is empty, ignore has_feature_ flag\n");
                 has_feature_ = false;
@@ -730,10 +736,10 @@ namespace DeepSORT {
             if (trace_.size() > nbuckets_) {
                 trace_.pop_front();
             }
-
-            km_filter.update(box, mean_, covariance_);
+            
+            km_filter.update(box, mean_, covariance_);  // tracker和detection确定匹配上才会调用此update
             last_position_ = box;
-            ++ hits_;
+            ++ hits_;                // 原因同上
             time_since_update_ = 0;
 
             if (state_ == State::Tentative && hits_ >= nhit_) {
@@ -766,7 +772,7 @@ namespace DeepSORT {
     private:
         int time_since_update_{0};
         State state_{State::Tentative};
-        int age_{1};
+        int age_{1};  // 自第一次出现以来的总帧数
         int hits_{1};
         int id_;
         int feature_cursor_ = 0;
@@ -774,9 +780,9 @@ namespace DeepSORT {
         cv::Mat feature_bucket_;
         bool has_feature_ = false;
 
-        int nbuckets_ = 100;
-        int max_age_ = 100;
-        int nhit_ = 3;
+        int nbuckets_ = 100;  // 最大保存特征帧数，超过该帧数进行滚动保存
+        int max_age_ = 100;  // 最大寿命，如果经过max_age帧没有追踪到该物体，就将该追踪目标改为删除态
+        int nhit_ = 3;  // 最高击中次数，如果击中该次数，物体由追踪态转为确定态。
 
         Box last_position_;
         Eigen::Matrix<float, 8, 1> mean_;
@@ -860,7 +866,7 @@ namespace DeepSORT {
                         std::back_inserter(unmatched_boxes_index)
                     );
 
-                    // unmatched_objects_index
+                    // unmatched_objects_index, object即trackers
                     std::set<int> unmatched_objects_set(unmatched_objects_index.begin(), unmatched_objects_index.end());
                     std::set<int> match_objects_set(match_objects_index.begin(), match_objects_index.end());
                     unmatched_objects_index.clear();
@@ -955,13 +961,13 @@ namespace DeepSORT {
         }
 
     private:
-        int id_next_{1};
+        int id_next_{1};  // 物体追踪ID
         std::vector<TrackObjectImpl> objects_;
         KalmanFilter kalman_;
-        float distance_threshold_ = 0;
-        int nbuckets_ = 100;
-        int max_age_ = 100;
-        int nhit_ = 3;
+        float distance_threshold_ = 0;  // 马氏距离阈值
+        int nbuckets_ = 100; // 最大保存特征帧数，超过该帧数进行滚动保存
+        int max_age_ = 100;  // 最大寿命，如果经过max_age帧没有追踪到该物体，就将该追踪目标改为删除态
+        int nhit_ = 3;       // 最高击中次数，如果击中该次数，物体由追踪态转为确定态。
         bool has_feature_ = false;
     };
 
