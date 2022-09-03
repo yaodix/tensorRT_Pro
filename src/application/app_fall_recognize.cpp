@@ -54,14 +54,14 @@ int app_fall_recognize(){
     });
 
     auto tracker = DeepSORT::create_tracker(config);
-    // VideoWriter writer("fall_video.result.avi", cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), 
-    //     30,
-    //     Size(cap.get(cv::CAP_PROP_FRAME_WIDTH), cap.get(cv::CAP_PROP_FRAME_HEIGHT))
-    // );
-    // if(!writer.isOpened()){
-    //     INFOE("Writer failed.");
-    //     return 0;
-    // }
+    VideoWriter writer("fall_video.result.avi", cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), 
+        30,
+        Size(cap.get(cv::CAP_PROP_FRAME_WIDTH), cap.get(cv::CAP_PROP_FRAME_HEIGHT))
+    );
+    if(!writer.isOpened()){
+        INFOE("Writer failed.");
+        return 0;
+    }
     int frame_id = 0;
     while(cap.read(image)){
         std::cout << "frame " << frame_id++ << std::endl;
@@ -107,10 +107,10 @@ int app_fall_recognize(){
            }
         }
         //remote_show->post(image);
-        //writer.write(image);
+        writer.write(image);
         // cv::imwrite("image_debug.jpg", image);
-        cv::imshow("hello", image);
-        cv::waitKey(5);
+        // cv::imshow("hello", image);
+        // cv::waitKey(5);
     }
     INFO("Done");
     return 0;
