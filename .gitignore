@@ -99,3 +99,5 @@ weights/*
 
 pro
 src/application/image_debug.jpg
+*.avi
+*.mp4

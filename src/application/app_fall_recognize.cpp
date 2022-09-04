@@ -54,11 +54,11 @@ int app_fall_recognize(){
     });
 
     auto tracker = DeepSORT::create_tracker(config);
-    VideoWriter writer("fall_video.result.avi", cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), 
+    VideoWriter writer("basketball_video_track.avi", cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), 
         30,
         Size(cap.get(cv::CAP_PROP_FRAME_WIDTH), cap.get(cv::CAP_PROP_FRAME_HEIGHT))
     );
-    if(!writer.isOpened()){
+    if(!writer.isOpened()) {
         INFOE("Writer failed.");
         return 0;
     }
@@ -72,13 +72,20 @@ int app_fall_recognize(){
         for(int i = 0; i < objects.size(); ++i){
             auto& obj = objects[i];
             if(obj.class_label != 0) continue;
-
-            rectangle(det_image, DeepSORT::convert_box_to_rect(obj), Scalar(0, 255, 0), 2);  // 检测框输出
-            imwrite("det.jpg", det_image);
-
             boxes.emplace_back(std::move(DeepSORT::convert_to_box(obj)));
+            rectangle(det_image, DeepSORT::convert_box_to_rect(obj), Scalar(0, 255, 0), 1);  // 当前检测框输出
         }
+        
         tracker->update(boxes);
+        
+        for (auto& item : tracker->get_objects()) {
+            if (item->is_confirmed() && item->time_since_update() == 0) {
+                DeepSORT::Box predic_box = item->predict_box();  // 当前预测框输出
+                Rect box = DeepSORT::convert_box_to_rect(predic_box);  
+                rectangle(det_image, box, Scalar(0, 0, 255), 1);  
+            }
+        }
+        imwrite("det.jpg", det_image);
 
         auto final_objects = tracker->get_objects();
         for(int i = 0; i < final_objects.size(); ++i){
@@ -107,9 +114,9 @@ int app_fall_recognize(){
            }
         }
         //remote_show->post(image);
+        // writer.write(det_image);
         writer.write(image);
-        // cv::imwrite("image_debug.jpg", image);
-        // cv::imshow("hello", image);
+        // cv::imshow("hello", det_image);
         // cv::waitKey(5);
     }
     INFO("Done");

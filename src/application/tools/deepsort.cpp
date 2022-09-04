@@ -909,7 +909,7 @@ namespace DeepSORT {
                     auto &TrackObject = objects_[obj_idx];
                     auto &box = boxes[box_idx];
                     BBoxXYAH boxah(box);
-
+                    // 马氏距离计算：卡尔曼预测的box模板检测box的距离
                     auto maha_distance = kalman_.ma_distance(
                         TrackObject.get_mean(), TrackObject.get_covariance(),
                         boxah, false
