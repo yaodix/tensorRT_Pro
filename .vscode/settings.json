@@ -79,5 +79,6 @@
         "locale": "cpp",
         "__atomic": "cpp"
     },
-    "workbench.tree.expandMode": "doubleClick"
+    "workbench.tree.expandMode": "doubleClick",
+    "ros.distro": "melodic"
 }
